@@ -13,30 +13,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Download and Extract Cloudreve
-        run: |
-          repo="cloudreve/Cloudreve"
-          releases=$(curl -s "https://api.github.com/repos/$repo/releases")
-          tag=$(echo "$releases" | jq -r '.[] | select(.prerelease == false) | .tag_name' | head -n 1)
-          download_url="https://github.com/$repo/releases/download/$tag/cloudreve_${tag}_linux_amd64.tar.gz"
-          echo "Downloading $download_url"
-          wget "$download_url" -O cloudreve.tar.gz
-          tar -xzf cloudreve.tar.gz
-          mv cloudreve cloudreve_tmp
-
-          version="${tag#v}"
-          echo "VERSION=$version" >> $GITHUB_ENV
-
-      - name: Configure Git
+      - name: Set up Git
         run: |
           git config --global user.name "gopcn"
           git config --global user.email "121377609+gopcn@users.noreply.github.com"
-          git checkout main
+
+      - name: Get latest release
+        id: get-latest-release
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: cloudreve/Cloudreve
+          excludes: prerelease, draft
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download and Extract Cloudreve
+        run: |
+          wget "https://github.com/cloudreve/Cloudreve/releases/download/${{ steps.get-latest-release.outputs.release }}/cloudreve_${{ steps.get-latest-release.outputs.release }}_linux_amd64.tar.gz" -O cloudreve.tar.gz
+          tar -zxvf "cloudreve.tar.gz" --overwrite
+          rm "cloudreve.tar.gz"
 
       - name: Preserve repository README.md and Remove unnecessary files
         run: |
           mv README.md README_tmp.md
-          rm -f LICENSE README_zh-CN.md README.md
+          rm -rf LICENSE README_zh-CN.md README.md
 
       - name: Restore repository README.md
         run: |
@@ -46,10 +45,8 @@ jobs:
         run: |
           git restore README.md
 
-      - name: Rename Cloudreve binary and Commit changes
+      - name: Commit changes
         run: |
-          mv cloudreve_tmp cloudreve
-          rm cloudreve.tar.gz
           git add .
-          git diff-index --quiet HEAD || git commit -m "Version $VERSION"
+          git diff-index --quiet HEAD || git commit -m "v${{ steps.get-latest-release.outputs.release }}"
           git push origin main
