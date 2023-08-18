@@ -24,29 +24,18 @@ jobs:
         with:
           repository: cloudreve/Cloudreve
           excludes: prerelease, draft
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.AUTH_PAT }}
 
       - name: Download and Extract Cloudreve
         run: |
-          wget "https://github.com/cloudreve/Cloudreve/releases/download/${{ steps.get-latest-release.outputs.release }}/cloudreve_${{ steps.get-latest-release.outputs.release }}_linux_amd64.tar.gz" -O cloudreve.tar.gz
-          tar -zxvf "cloudreve.tar.gz" --overwrite
-          rm "cloudreve.tar.gz"
+         curl -sL "https://github.com/cloudreve/Cloudreve/releases/download/${{ steps.get-latest-release.outputs.release }}/cloudreve_${{ steps.get-latest-release.outputs.release }}_linux_amd64.tar.gz" | tar -zxv
 
-      - name: Preserve repository README.md and Remove unnecessary files
-        run: |
-          mv README.md README_tmp.md
-          rm -rf LICENSE README_zh-CN.md README.md
-
-      - name: Restore repository README.md
-        run: |
-          mv README_tmp.md README.md
-
-      - name: Restore original README.md content
-        run: |
-          git restore README.md
-
-      - name: Commit changes
-        run: |
-          git add .
-          git diff-index --quiet HEAD || git commit -m "v${{ steps.get-latest-release.outputs.release }}"
-          git push origin main
+      - name: Commit Changes
+        uses: github-actions-x/commit@v2.9
+        with:
+          github-token: ${{ secrets.AUTH_PAT }}
+          commit-message: "v${{ steps.get-latest-release.outputs.release }}"
+          files: cloudreve
+          rebase: 'true'
+          name: gopcn
+          email: 121377609+gopcn@users.noreply.github.com
