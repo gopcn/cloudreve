@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Git
         run: |
@@ -28,7 +28,7 @@ jobs:
 
       - name: Download and Extract Cloudreve
         run: |
-         curl -sL "https://github.com/cloudreve/Cloudreve/releases/download/${{ steps.get-latest-release.outputs.release }}/cloudreve_${{ steps.get-latest-release.outputs.release }}_linux_amd64.tar.gz" | tar -zxv
+          curl -sL "https://github.com/cloudreve/Cloudreve/releases/download/${{ steps.get-latest-release.outputs.release }}/cloudreve_${{ steps.get-latest-release.outputs.release }}_linux_amd64.tar.gz" | tar -zxv
 
       - name: Commit Changes
         uses: github-actions-x/commit@v2.9
