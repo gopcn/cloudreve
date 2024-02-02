@@ -24,7 +24,7 @@ jobs:
         with:
           repository: cloudreve/Cloudreve
           excludes: prerelease, draft
-          token: ${{ secrets.AUTH_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download and Extract Cloudreve
         run: |
