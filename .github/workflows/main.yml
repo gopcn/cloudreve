@@ -33,9 +33,9 @@ jobs:
       - name: Commit Changes
         uses: github-actions-x/commit@v2.9
         with:
-          github-token: ${{ secrets.AUTH_PAT }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "v${{ steps.get-latest-release.outputs.release }}"
           files: cloudreve
           rebase: 'true'
-          name: gopcn
-          email: 121377609+gopcn@users.noreply.github.com
+          name: GitHub Action
+          email: action@github.com
