@@ -13,11 +13,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Git
-        run: |
-          git config --global user.name "gopcn"
-          git config --global user.email "121377609+gopcn@users.noreply.github.com"
-
       - name: Get latest release
         id: get-latest-release
         uses: pozetroninc/github-action-get-latest-release@master
